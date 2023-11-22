@@ -16,6 +16,10 @@ h1{
     margin: 10px 0;
 }
 
+video{
+    object-fit: cover;
+}
+
 #preview {
     border: 1px solid;
 }
