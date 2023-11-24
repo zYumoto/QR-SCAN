@@ -3,17 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const previewVideo = document.getElementById('preview');
     const statusLight = createStatusLight(); // Cria a luz e a adiciona ao DOM
 
-    let scanner = new Instascan.Scanner({ video: previewVideo });
+    let scanner;
 
-    scanner.addListener('scan', function (content) {
-        if (content.startsWith("FC")) { //FC prefixo utulizado no QRCODE para a verificação
-            setStatusLight('green');
-        } else {
-            setStatusLight('red');
-        }
-    });
-
-    Instascan.Camera.getCameras().then(function (cameras) { //Funçao Camera
+    Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             cameras.forEach(function (camera, index) {
                 const option = document.createElement('option');
@@ -22,10 +14,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 cameraSelect.add(option);
             });
 
-            cameraSelect.addEventListener('change', function () { //Função para a mudança de camera
+            cameraSelect.addEventListener('change', function () {
                 const selectedCameraIndex = cameraSelect.value;
                 const selectedCamera = cameras[selectedCameraIndex];
+                
+                // Adicione a propriedade mirror aqui
+                selectedCamera.mirror = false; // ou true, dependendo do resultado desejado
+
+                if (scanner) {
+                    scanner.stop();
+                }
+
+                scanner = new Instascan.Scanner({ video: previewVideo });
+                scanner.addListener('scan', function (content) {
+                    if (content.startsWith("FC")) {
+                        setStatusLight('green');
+                    } else {
+                        setStatusLight('red');
+                    }
+                });
+
                 scanner.start(selectedCamera);
+            });
+
+            // add a propriedade mirror
+            cameras[0].mirror = false; // ou true, dependendo do resultado desejado
+
+            scanner = new Instascan.Scanner({ video: previewVideo });
+            scanner.addListener('scan', function (content) {
+                if (content.startsWith("FC")) {
+                    setStatusLight('green');
+                } else {
+                    setStatusLight('red');
+                }
             });
 
             scanner.start(cameras[0]);
