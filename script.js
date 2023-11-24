@@ -5,6 +5,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let scanner;
 
+    function startScanner(selectedCamera) {
+        if (scanner) {
+            scanner.stop();
+        }
+
+        scanner = new Instascan.Scanner({ video: previewVideo });
+        scanner.addListener('scan', function (content) {
+            if (content.startsWith("FC")) {
+                setStatusLight('green');
+            } else {
+                setStatusLight('red');
+            }
+        });
+
+        const constraints = {
+            video: {
+                deviceId: selectedCamera.deviceId,
+                facingMode: selectedCamera.facingMode,
+                mirror: false, // ou true, dependendo do resultado desejado
+            }
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function (stream) {
+                previewVideo.srcObject = stream;
+                scanner.start(selectedCamera);
+            })
+            .catch(function (error) {
+                console.error('Erro ao acessar a câmera:', error);
+            });
+    }
+
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             cameras.forEach(function (camera, index) {
@@ -17,39 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
             cameraSelect.addEventListener('change', function () {
                 const selectedCameraIndex = cameraSelect.value;
                 const selectedCamera = cameras[selectedCameraIndex];
-                
-                // Adicione a propriedade mirror aqui
-                cameraSelect.mirror = true; // ou true, dependendo do resultado desejado
-
-                if (scanner) {
-                    scanner.stop();
-                }
-
-                scanner = new Instascan.Scanner({ video: previewVideo });
-                scanner.addListener('scan', function (content) {
-                    if (content.startsWith("FC")) {
-                        setStatusLight('green');
-                    } else {
-                        setStatusLight('red');
-                    }
-                });
-
-                scanner.start(cameraSelect);
+                startScanner(selectedCamera);
             });
 
-            // add a propriedade mirror
-            cameras[0].mirror = true; // ou true, dependendo do resultado desejado
-
-            scanner = new Instascan.Scanner({ video: previewVideo });
-            scanner.addListener('scan', function (content) {
-                if (content.startsWith("FC")) {
-                    setStatusLight('green');
-                } else {
-                    setStatusLight('red');
-                }
-            });
-
-            scanner.start(cameras[0]);
+            startScanner(cameras[0]);
         } else {
             console.error('Nenhuma câmera encontrada.');
         }
