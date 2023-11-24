@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const selectedCamera = cameras[selectedCameraIndex];
                 
                 // Adicione a propriedade mirror aqui
-                selectedCamera.mirror = false; // ou true, dependendo do resultado desejado
+                selectedCamera.mirror = true; // ou true, dependendo do resultado desejado
 
                 if (scanner) {
                     scanner.stop();
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // add a propriedade mirror
-            cameras[0].mirror = false; // ou true, dependendo do resultado desejado
+            cameras[0].mirror = true; // ou true, dependendo do resultado desejado
 
             scanner = new Instascan.Scanner({ video: previewVideo });
             scanner.addListener('scan', function (content) {
