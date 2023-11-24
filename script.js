@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
             video: {
                 deviceId: selectedCamera.deviceId,
                 facingMode: selectedCamera.facingMode,
-                mirror: false, // ou true, dependendo do resultado desejado
+                mirror: true, // ou true, dependendo do resultado desejado
             }
         };
 
