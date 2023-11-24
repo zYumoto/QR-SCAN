@@ -1,16 +1,24 @@
-const cameraSelect = document.getElementById("camera-select");
-
 document.addEventListener('DOMContentLoaded', function () {
-    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+    const cameraSelect = document.getElementById("camera-select");
+    const previewVideo = document.getElementById('preview');
+    const statusLight = createStatusLight(); // Cria a luz e a adiciona ao DOM
+
+    let scanner = new Instascan.Scanner({ video: previewVideo });
 
     scanner.addListener('scan', function (content) {
         alert('QR Code lido: ' + content);
-        // Aqui você pode fazer o que quiser com o conteúdo do QR code
+
+        if (content.startsWith("FC")) {
+            alert('Acesso Liberado Aluno');
+            setStatusLight('green');
+        } else {
+            alert('Acesso Negado');
+            setStatusLight('red');
+        }
     });
 
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
-            // Preenche as opções da caixa de seleção com as câmeras disponíveis
             cameras.forEach(function (camera, index) {
                 const option = document.createElement('option');
                 option.value = index;
@@ -18,14 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 cameraSelect.add(option);
             });
 
-            // Adiciona um evento de mudança à caixa de seleção
             cameraSelect.addEventListener('change', function () {
                 const selectedCameraIndex = cameraSelect.value;
                 const selectedCamera = cameras[selectedCameraIndex];
                 scanner.start(selectedCamera);
             });
 
-            // Inicia o scanner usando a primeira câmera por padrão
             scanner.start(cameras[0]);
         } else {
             console.error('Nenhuma câmera encontrada.');
@@ -33,4 +39,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }).catch(function (e) {
         console.error(e);
     });
+
+    function createStatusLight() {
+        const light = document.createElement('div');
+        light.id = 'status-light';
+        light.style.width = '20px';
+        light.style.height = '20px';
+        light.style.borderRadius = '50%';
+        light.style.position = 'absolute';
+        light.style.top = '10px';
+        light.style.left = '10px';
+        document.body.appendChild(light);
+        return light;
+    }
+
+    function setStatusLight(color) {
+        statusLight.style.backgroundColor = color;
+    }
 });
