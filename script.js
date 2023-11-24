@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let scanner = new Instascan.Scanner({ video: previewVideo });
 
     scanner.addListener('scan', function (content) {
-        alert('QR Code lido: ' + content);
-
-        if (content.startsWith("FC")) {
+        if (content.startsWith("FC")) { //FC prefixo utulizado no QRCODE para a verificação
             alert('Acesso Liberado Aluno');
             setStatusLight('green');
         } else {
@@ -17,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    Instascan.Camera.getCameras().then(function (cameras) {
+    Instascan.Camera.getCameras().then(function (cameras) { //Funçao Camera
         if (cameras.length > 0) {
             cameras.forEach(function (camera, index) {
                 const option = document.createElement('option');
@@ -26,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 cameraSelect.add(option);
             });
 
-            cameraSelect.addEventListener('change', function () {
+            cameraSelect.addEventListener('change', function () { //Função para a mudança de camera
                 const selectedCameraIndex = cameraSelect.value;
                 const selectedCamera = cameras[selectedCameraIndex];
                 scanner.start(selectedCamera);
