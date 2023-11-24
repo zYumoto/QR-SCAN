@@ -7,10 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     scanner.addListener('scan', function (content) {
         if (content.startsWith("FC")) { //FC prefixo utulizado no QRCODE para a verificação
-            alert('Acesso Liberado Aluno');
             setStatusLight('green');
         } else {
-            alert('Acesso Negado');
             setStatusLight('red');
         }
     });
