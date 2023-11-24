@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const selectedCamera = cameras[selectedCameraIndex];
                 
                 // Adicione a propriedade mirror aqui
-                selectedCamera.mirror = true; // ou true, dependendo do resultado desejado
+                cameraSelect.mirror = true; // ou true, dependendo do resultado desejado
 
                 if (scanner) {
                     scanner.stop();
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                scanner.start(selectedCamera);
+                scanner.start(cameraSelect);
             });
 
             // add a propriedade mirror
