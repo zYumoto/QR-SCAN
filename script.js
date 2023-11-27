@@ -2,42 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const cameraSelect = document.getElementById("camera-select");
     const previewVideo = document.getElementById('preview');
     const statusLight = createStatusLight(); // Cria a luz e a adiciona ao DOM
+    let scanner = new Instascan.Scanner({ video: previewVideo });
 
-    let scanner;
-
-    function startScanner(selectedCamera) {
-        if (scanner) {
-            scanner.stop();
+    scanner.addListener('scan', function (content) {
+        if (content.startsWith("FC")) { //FC prefixo utulizado no QRCODE para a verificação
+            setStatusLight('green');
+        } else {
+            setStatusLight('red');
         }
-
-        scanner = new Instascan.Scanner({ video: previewVideo });
-        scanner.addListener('scan', function (content) {
-            if (content.startsWith("FC")) {
-                setStatusLight('green');
-            } else {
-                setStatusLight('red');
-            }
-        });
-
-        const constraints = {
-            video: {
-                deviceId: selectedCamera.deviceId,
-                facingMode: selectedCamera.facingMode,
-                mirror: true, // ou true, dependendo do resultado desejado
-            }
-        };
-
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(function (stream) {
-                previewVideo.srcObject = stream;
-                scanner.start(selectedCamera);
-            })
-            .catch(function (error) {
-                console.error('Erro ao acessar a câmera:', error);
-            });
-    }
-
-    Instascan.Camera.getCameras().then(function (cameras) {
+    });
+    Instascan.Camera.getCameras().then(function (cameras) { //Funçao Camera
         if (cameras.length > 0) {
             cameras.forEach(function (camera, index) {
                 const option = document.createElement('option');
@@ -45,21 +19,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 option.text = camera.name || `Câmera ${index + 1}`;
                 cameraSelect.add(option);
             });
-
-            cameraSelect.addEventListener('change', function () {
+            cameraSelect.addEventListener('change', function () { //Função para a mudança de camera
                 const selectedCameraIndex = cameraSelect.value;
                 const selectedCamera = cameras[selectedCameraIndex];
-                startScanner(selectedCamera);
+                scanner.start(selectedCamera);
             });
-
-            startScanner(cameras[0]);
+            scanner.start(cameras[0]);
         } else {
             console.error('Nenhuma câmera encontrada.');
         }
     }).catch(function (e) {
         console.error(e);
     });
-
     function createStatusLight() {
         const light = document.createElement('div');
         light.id = 'status-light';
@@ -72,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(light);
         return light;
     }
-
     function setStatusLight(color) {
         statusLight.style.backgroundColor = color;
     }
